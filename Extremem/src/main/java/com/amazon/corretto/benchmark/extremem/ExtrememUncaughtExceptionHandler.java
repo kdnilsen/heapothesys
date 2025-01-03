@@ -13,8 +13,10 @@ class ExtrememUncaughtExceptionHandler implements
 
   public void uncaughtException(Thread t, Throwable e) {
     try {
-      Util.internalError("Thread " + t +
-                         ": terminated with uncaught exception: " + e);
+      Util.internalError("Thread " + t + ": terminated with uncaught exception: " + e);
+      if (e.getClass() == Class.forName("java.lang.OutOfMemoryError")) {
+        Util.severeInternalError();
+      }
     } catch (Throwable x) {
       Util.severeInternalError();
     }
