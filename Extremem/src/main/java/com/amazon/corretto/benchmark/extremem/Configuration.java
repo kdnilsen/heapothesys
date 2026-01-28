@@ -134,6 +134,8 @@ class Configuration {
 
   private RelativeTime PhasedUpdateInterval;
 
+  private RelativeTime LongestPriod;
+
   // Multiple concurrent Server threads execute with the same period,
   // with different stagger values.
   private RelativeTime CustomerReplacementPeriod;
@@ -150,6 +152,8 @@ class Configuration {
   private int SelectionCriteriaCount;
   private float BuyThreshold;
   private float SaveForLaterThreshold;
+
+  private RelativeTime LongestPeriod;
 
   Configuration(String[] args) {
     this.args = args;
@@ -282,6 +286,9 @@ class Configuration {
 
     parseArguments(t, args);
     assureConfiguration(t);
+
+    LongestPeriod = (ServerPeriod.compare(CustomerPeriod) > 0)? ServerPeriod: CustomerPeriod;
+
     t.replaceSeed(RandomSeed);
     dictionary = new Words(t, DictionaryFile, LifeSpan.NearlyForever,
                            DictionarySize, MaxArrayLength);
@@ -953,6 +960,10 @@ class Configuration {
 
   RelativeTime WarmupDuration() {
     return WarmupDuration;
+  }
+
+  RelativeTime LongestPeriod() {
+    return LongestPeriod;
   }
 
   RelativeTime CustomerPeriod() {

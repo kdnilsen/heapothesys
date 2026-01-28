@@ -92,8 +92,13 @@ class ServerThread extends ExtrememThread {
     while (true) {
       // If the simulation will have ended before we wake up, don't
       // even bother to sleep.
-      if (next_release_time.compare(end_simulation_time) >= 0)
+      if (next_release_time.compare(end_simulation_time) >= 0) {
+        // Wait one period beyond end simulation time to make sure all Customer and Server  work is completed
+        // before we begin report generation.
+        AbsoluteTime end_execution_time = end_simulation_time.addRelative(this, config.LongestPeriod());
+        end_execution_time.sleep(this);
         break;
+      }
 
       AbsoluteTime now = next_release_time.sleep(this);
       now.garbageFootprint(this);
