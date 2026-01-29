@@ -169,19 +169,19 @@ class ServerLog extends ExtrememObject {
   }
 
   void prepareToReport(String thread_label) {
-    String label = (_dump_xact_response_times)? thread_label + ":xact_response_times": null;
+    String label = (_dump_xact_response_times)? thread_label + ":SalesTransactionResponseTimes": null;
     xact_response_times.prep_for_reporting(label);
 
-    label = (_dump_history_response_times)? thread_label + ":history_response_times": null;
+    label = (_dump_history_response_times)? thread_label + ":BrowsingHistoryResponseTimes": null;
     history_response_times.prep_for_reporting(label);
 
-    label = (_dump_customer_response_times)? thread_label + ":customer_response_times": null;
+    label = (_dump_customer_response_times)? thread_label + ":CustomerReplacementResponseTimes": null;
     customer_response_times.prep_for_reporting(label);
 
-    label = (_dump_product_response_times)? thread_label + ":product_response_times": null;
+    label = (_dump_product_response_times)? thread_label + ":ProductReplacementResponseTimes": null;
     product_response_times.prep_for_reporting(label);
 
-    label = (_dump_do_nothing_response_times)? thread_label + ":do_nothing_response_times": null;
+    label = (_dump_do_nothing_response_times)? thread_label + ":ServerDoNothingResponseTimes": null;
     do_nothing_response_times.prep_for_reporting(label);
   }
 

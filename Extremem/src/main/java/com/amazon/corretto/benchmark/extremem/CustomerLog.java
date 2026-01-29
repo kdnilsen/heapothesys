@@ -195,19 +195,19 @@ class CustomerLog extends ExtrememObject {
   }
 
   void prepareToReport(String thread_label) {
-      String label = (_dump_prepare_response_times)? thread_label + ":prepare_response_times": null;
+      String label = (_dump_prepare_response_times)? thread_label + ":PreparationResponseTimes": null;
     prepare_response_times.prep_for_reporting(label);
 
-    label = (_dump_purchase_response_times)? thread_label + ":purchase_response_times": null;
+    label = (_dump_purchase_response_times)? thread_label + ":PurchaseResponseTimes": null;
     purchase_response_times.prep_for_reporting(label);
 
-    label = (_dump_save_for_later_response_times)? thread_label + ":save_for_later_response_times": null;
+    label = (_dump_save_for_later_response_times)? thread_label + ":SaveForLaterResponseTimes": null;
     save_for_later_response_times.prep_for_reporting(label);
 
-    label = (_dump_abandonment_response_times)? thread_label + ":abandonment_response_times": null;
+    label = (_dump_abandonment_response_times)? thread_label + ":AbandonmentResponseTimes": null;
     abandonment_response_times.prep_for_reporting(label);
 
-    label = (_dump_do_nothing_response_times)? thread_label + ":do_nothing_response_times": null;
+    label = (_dump_do_nothing_response_times)? thread_label + ":CustomerDoNothingResponseTimes": null;
     do_nothing_response_times.prep_for_reporting(label);
   }
 
