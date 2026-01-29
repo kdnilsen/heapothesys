@@ -51,7 +51,7 @@ class ResponseTimeMeasurements extends ExtrememObject {
 
   void addToLog(ResponseTimeMeasurements other) {
     if (total_entries > 0) {
-      other.prep_for_reporting();
+      other.prep_for_reporting(null);
       for (int i = 0; i < other.logged_entries; i++) {
         addToLog(other.log[(other.first_entry + i) % total_entries]);
       }
@@ -84,7 +84,16 @@ class ResponseTimeMeasurements extends ExtrememObject {
     return logged_entries;
   }
 
-  private void prep_for_reporting() {
+  public void prep_for_reporting(String label) {
+    if (label != null) {
+      Report.acquireReportLock();
+      Report.output(label);
+      for (int i = 0; i < logged_entries; i++) {
+        Report.output(Long.toString(log[i]));
+      }
+      Report.releaseReportLock();
+    }
+
     if (logged_entries > 0) {
       if (logged_entries < total_entries) {
         java.util.Arrays.sort(log, 0, logged_entries);
@@ -100,7 +109,7 @@ class ResponseTimeMeasurements extends ExtrememObject {
   long getP50() {
     if (logged_entries > 0) {
       if (needs_preparation) {
-        prep_for_reporting();
+        prep_for_reporting(null);
       }
       return (logged_entries > 1)? log[(int)(logged_entries * 0.50 - 1)]: -1;
     }
@@ -110,7 +119,7 @@ class ResponseTimeMeasurements extends ExtrememObject {
   long getP95() {
     if (logged_entries > 0) {
       if (needs_preparation) {
-        prep_for_reporting();
+        prep_for_reporting(null);
       }
       return (logged_entries >= 100)? log[(int)(logged_entries * 0.95 - 1)]: -1;
     }
@@ -120,7 +129,7 @@ class ResponseTimeMeasurements extends ExtrememObject {
   long getP99() {
     if (logged_entries > 0) {
       if (needs_preparation) {
-        prep_for_reporting();
+        prep_for_reporting(null);
       }
       return (logged_entries >= 100)? log[(int)(logged_entries * 0.99 - 1)]: -1;
     }
@@ -130,7 +139,7 @@ class ResponseTimeMeasurements extends ExtrememObject {
   long getP99_9() {
     if (logged_entries > 0) {
       if (needs_preparation) {
-        prep_for_reporting();
+        prep_for_reporting(null);
       }
       return (logged_entries >= 1000)? log[(int)(logged_entries * 0.999 - 1)]: -1;
     }
@@ -140,7 +149,7 @@ class ResponseTimeMeasurements extends ExtrememObject {
   long getP99_99() {
     if (logged_entries > 0) {
       if (needs_preparation) {
-        prep_for_reporting();
+        prep_for_reporting(null);
       }
       return (logged_entries >= 10000)? log[(int)(logged_entries * 0.9999 - 1)]: -1;
     }
@@ -150,7 +159,7 @@ class ResponseTimeMeasurements extends ExtrememObject {
   long getP99_999() {
     if (logged_entries > 0) {
       if (needs_preparation) {
-        prep_for_reporting();
+        prep_for_reporting(null);
       }
       return (logged_entries >= 100000)? log[(int)(logged_entries * 0.99999 - 1)]: -1;
     }
@@ -160,7 +169,7 @@ class ResponseTimeMeasurements extends ExtrememObject {
   long getP100() {
     if (logged_entries > 0) {
       if (needs_preparation) {
-        prep_for_reporting();
+        prep_for_reporting(null);
       }
       return log[logged_entries - 1];
     }
@@ -173,7 +182,7 @@ class ResponseTimeMeasurements extends ExtrememObject {
 
     if (logged_entries > 0) {
       if (needs_preparation) {
-        prep_for_reporting();
+        prep_for_reporting(null);
       }
 
       long p100     = getP100();

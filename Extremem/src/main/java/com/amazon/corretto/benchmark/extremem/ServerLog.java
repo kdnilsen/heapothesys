@@ -38,7 +38,19 @@ class ServerLog extends ExtrememObject {
   int total_do_nothings;
   ResponseTimeMeasurements do_nothing_response_times;
 
+  final boolean _dump_xact_response_times;
+  final boolean _dump_history_response_times;
+  final boolean _dump_customer_response_times;
+  final boolean _dump_product_response_times;
+  final boolean _dump_do_nothing_response_times;
+
   ServerLog(ExtrememThread t, LifeSpan ls, int response_time_measurements) {
+    this(t, ls, response_time_measurements, false, false, false, false, false);
+  }
+
+  ServerLog(ExtrememThread t, LifeSpan ls, int response_time_measurements,
+            boolean dump_xact_tallies, boolean dump_history_tallies, boolean dump_customer_tallies,
+            boolean dump_product_tallies, boolean dump_do_nothing_tallies) {
     super(t, ls);
 
     sales_xact = new RelativeTimeMetrics(t, ls);
@@ -52,6 +64,12 @@ class ServerLog extends ExtrememObject {
     customer_response_times = new ResponseTimeMeasurements(t, ls, response_time_measurements);
     product_response_times = new ResponseTimeMeasurements(t, ls, response_time_measurements);
     do_nothing_response_times = new ResponseTimeMeasurements(t, ls, response_time_measurements);
+
+    _dump_xact_response_times = dump_xact_tallies;
+    _dump_history_response_times = dump_history_tallies;
+    _dump_customer_response_times = dump_customer_tallies;
+    _dump_product_response_times = dump_product_tallies;
+    _dump_do_nothing_response_times = dump_do_nothing_tallies;
 
     MemoryLog log = t.memoryLog();
     // Account for reference fields sales_xact, expire_history,
@@ -148,6 +166,23 @@ class ServerLog extends ExtrememObject {
     do_nothing_response_times.addToLog(delta_microseconds);
     now.garbageFootprint(t);
     delta.garbageFootprint(t);
+  }
+
+  void prepareToReport(String thread_label) {
+    String label = (_dump_xact_response_times)? thread_label + ":xact_response_times": null;
+    xact_response_times.prep_for_reporting(label);
+
+    label = (_dump_history_response_times)? thread_label + ":history_response_times": null;
+    history_response_times.prep_for_reporting(label);
+
+    label = (_dump_customer_response_times)? thread_label + ":customer_response_times": null;
+    customer_response_times.prep_for_reporting(label);
+
+    label = (_dump_product_response_times)? thread_label + ":product_response_times": null;
+    product_response_times.prep_for_reporting(label);
+
+    label = (_dump_do_nothing_response_times)? thread_label + ":do_nothing_response_times": null;
+    do_nothing_response_times.prep_for_reporting(label);
   }
 
   void report(ExtrememThread t, String label, boolean reportCSV) {

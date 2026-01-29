@@ -41,13 +41,25 @@ class CustomerLog extends ExtrememObject {
   int total_abandoned;
   int total_do_nothings;
 
-  ResponseTimeMeasurements prepare_response_times;
-  ResponseTimeMeasurements purchase_response_times;
-  ResponseTimeMeasurements save_for_later_response_times;
-  ResponseTimeMeasurements abandonment_response_times;
-  ResponseTimeMeasurements do_nothing_response_times;
+  final ResponseTimeMeasurements prepare_response_times;
+  final ResponseTimeMeasurements purchase_response_times;
+  final ResponseTimeMeasurements save_for_later_response_times;
+  final ResponseTimeMeasurements abandonment_response_times;
+  final ResponseTimeMeasurements do_nothing_response_times;
+
+  final boolean _dump_prepare_response_times;
+  final boolean _dump_purchase_response_times;
+  final boolean _dump_save_for_later_response_times;
+  final boolean _dump_abandonment_response_times;
+  final boolean _dump_do_nothing_response_times;
 
   CustomerLog(ExtrememThread t, LifeSpan ls, int response_time_measurements) {
+    this(t, ls, response_time_measurements, false, false, false, false, false);
+  }
+
+  CustomerLog(ExtrememThread t, LifeSpan ls, int response_time_measurements,
+              boolean dump_prepare_tallies, boolean dump_purchase_tallies, boolean dump_save_tallies,
+              boolean dump_abandonment_tallies, boolean dump_do_nothing_tallies) {
     super(t, ls);
     MemoryLog log = t.memoryLog();
     Polarity Grow = Polarity.Expand;
@@ -72,6 +84,12 @@ class CustomerLog extends ExtrememObject {
     save_for_later_response_times = new ResponseTimeMeasurements(t, ls, response_time_measurements);
     abandonment_response_times = new ResponseTimeMeasurements(t, ls, response_time_measurements);
     do_nothing_response_times = new ResponseTimeMeasurements(t, ls, response_time_measurements);
+
+    _dump_prepare_response_times = dump_prepare_tallies;
+    _dump_purchase_response_times = dump_purchase_tallies;
+    _dump_save_for_later_response_times = dump_save_tallies;
+    _dump_abandonment_response_times = dump_abandonment_tallies;
+    _dump_do_nothing_response_times = dump_do_nothing_tallies;
   }
 
   public ResponseTimeMeasurements getPreparationResponseTimes() {
@@ -174,6 +192,23 @@ class CustomerLog extends ExtrememObject {
 
   int engagements() {
     return engagements;
+  }
+
+  void prepareToReport(String thread_label) {
+      String label = (_dump_prepare_response_times)? thread_label + ":prepare_response_times": null;
+    prepare_response_times.prep_for_reporting(label);
+
+    label = (_dump_purchase_response_times)? thread_label + ":purchase_response_times": null;
+    purchase_response_times.prep_for_reporting(label);
+
+    label = (_dump_save_for_later_response_times)? thread_label + ":save_for_later_response_times": null;
+    save_for_later_response_times.prep_for_reporting(label);
+
+    label = (_dump_abandonment_response_times)? thread_label + ":abandonment_response_times": null;
+    abandonment_response_times.prep_for_reporting(label);
+
+    label = (_dump_do_nothing_response_times)? thread_label + ":do_nothing_response_times": null;
+    do_nothing_response_times.prep_for_reporting(label);
   }
 
   void report(ExtrememThread t, String label, boolean reportCSV) {

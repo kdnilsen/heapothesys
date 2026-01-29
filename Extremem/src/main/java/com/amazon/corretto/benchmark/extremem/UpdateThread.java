@@ -96,6 +96,9 @@ class UpdateThread extends ExtrememThread {
     while (true) {
       // If the simulation will have ended before we wake up, don't schedule another iteration.
       if (next_release_time.compare(end_simulation_time) >= 0) {
+
+        Report.output("UpdateThread: ", getLabel(), " is winding down");
+
         // Wait one period beyond end simulation time to make sure all Customer and Server work is completed
         // before we begin report generation.
         AbsoluteTime end_execution_time = end_simulation_time.addRelative(this, config.LongestPeriod());
@@ -185,12 +188,17 @@ class UpdateThread extends ExtrememThread {
     }
     Trace.msg(2, "Server ", label, " terminating.  Time is up.");
 
+    Report.output("UpdateThread: ", getLabel(), " has finished simulation");
+
     updateReport(customers_rebuild_count, replaced_customers_min, replaced_customers_max, replaced_customers_total,
                  replaced_customers_micros_min, replaced_customers_micros_max, replaced_customers_micros_total,
                  products_rebuild_count, replaced_products_min, replaced_products_max, replaced_products_total,
                  replaced_products_micros_min, replaced_products_micros_max, replaced_products_micros_total);
 
     this.report(this);
+
+
+    Report.output("UpdateThread: ", getLabel(), " has finished reporting");
   }
 
   synchronized void updateReport(long customers_rebuild_count, long replaced_customers_min, long replaced_customers_max,

@@ -40,6 +40,16 @@ class Configuration {
   static final boolean DefaultFastAndFurious = false;
   static final boolean DefaultPhasedUpdates = false;
   static final boolean DefaultAllowAnyMatch = true;
+  static final boolean DefaultDumpAbandonmentResponseTimes = false;
+  static final boolean DefaultDumpBrowsingHistoryResponseTimes = false;
+  static final boolean DefaultDumpCustomerDoNothingResponseTimes = false;
+  static final boolean DefaultDumpCustomerReplacementResponseTimes = false;
+  static final boolean DefaultDumpPreparationResponseTimes = false;
+  static final boolean DefaultDumpProductReplacementResponseTimes = false;
+  static final boolean DefaultDumpPurchaseResponseTimes = false;
+  static final boolean DefaultDumpSalesTransactionResponseTimes = false;
+  static final boolean DefaultDumpSaveForLaterResponseTimes = false;
+  static final boolean DefaultDumpServerDoNothingResponseTimes = false;
 
   static final int DefaultDictionarySize = 25000;
   static final String DefaultDictionaryFile = "/usr/share/dict/words";
@@ -114,8 +124,18 @@ class Configuration {
   private int ServerThreads;
 
   private boolean AllowAnyMatch;
+  private boolean DumpAbandonmentResponseTimes;
+  private boolean DumpBrowsingHistoryResponseTimes;
+  private boolean DumpCustomerDoNothingResponseTimes;
+  private boolean DumpCustomerReplacementResponseTimes;
+  private boolean DumpPreparationResponseTimes;
+  private boolean DumpProductReplacementResponseTimes;
+  private boolean DumpPurchaseResponseTimes;
+  private boolean DumpSalesTransactionResponseTimes;
+  private boolean DumpSaveForLaterResponseTimes;
+  private boolean DumpServerDoNothingResponseTimes;
   private boolean FastAndFurious;
-  private boolean PhasedUpdates;;
+  private boolean PhasedUpdates;
   private boolean ReportIndividualThreads;
   private boolean ReportCSV;
 
@@ -217,6 +237,17 @@ class Configuration {
     Util.tallyString(t.memoryLog(), LifeSpan.NearlyForever,
                      Polarity.Expand, DictionaryFile.length());
 
+    DumpAbandonmentResponseTimes = DefaultDumpAbandonmentResponseTimes;
+    DumpBrowsingHistoryResponseTimes = DefaultDumpBrowsingHistoryResponseTimes;
+    DumpCustomerDoNothingResponseTimes = DefaultDumpCustomerDoNothingResponseTimes;
+    DumpCustomerReplacementResponseTimes = DefaultDumpCustomerReplacementResponseTimes;
+    DumpPreparationResponseTimes = DefaultDumpPreparationResponseTimes;
+    DumpProductReplacementResponseTimes = DefaultDumpProductReplacementResponseTimes;
+    DumpPurchaseResponseTimes = DefaultDumpPurchaseResponseTimes;
+    DumpSalesTransactionResponseTimes = DefaultDumpSalesTransactionResponseTimes;
+    DumpSaveForLaterResponseTimes = DefaultDumpSaveForLaterResponseTimes;
+    DumpServerDoNothingResponseTimes = DefaultDumpServerDoNothingResponseTimes;
+
     MaxArrayLength = DefaultMaxArrayLength;
     MaxP50CustomerPrepMicroseconds = DefaultMaxP50CustomerPrepMicroseconds;
     MaxP95CustomerPrepMicroseconds = DefaultMaxP95CustomerPrepMicroseconds;
@@ -296,6 +327,16 @@ class Configuration {
 
   private static String[] boolean_patterns = {
     "AllowAnyMatch",
+    "DumpAbandonmentResponseTimes",
+    "DumpBrowsingHistoryResponseTimes",
+    "DumpCustomerDoNothingResponseTimes",
+    "DumpCustomerReplacementResponseTimes",
+    "DumpPreparationResponseTimes",
+    "DumpProductReplacementResponseTimes",
+    "DumpPurchaseResponseTimes",
+    "DumpSalesTransactionResponseTimes",
+    "DumpSaveForLaterResponseTimes",
+    "DumpServerDoNothingResponseTimes",
     "FastAndFurious",
     "PhasedUpdates",
     "ReportCSV",
@@ -412,21 +453,71 @@ class Configuration {
           break;
         }
       case 1:
+        if (keyword.equals("DumpAbandonmentResponseTimes")) {
+          DumpAbandonmentResponseTimes = b;
+          break;
+        }
+      case 2:
+        if (keyword.equals("DumpBrowsingHistoryResponseTimes")) {
+          DumpBrowsingHistoryResponseTimes = b;
+          break;
+        }
+      case 3:
+        if (keyword.equals("DumpCustomerDoNothingResponseTimes")) {
+          DumpCustomerDoNothingResponseTimes = b;
+          break;
+        }
+      case 4:
+        if (keyword.equals("DumpCustomerReplacementResponseTimes")) {
+          DumpCustomerReplacementResponseTimes = b;
+          break;
+        }
+      case 5:
+        if (keyword.equals("DumpPreparationResponseTimes")) {
+          DumpPreparationResponseTimes = b;
+          break;
+        }
+      case 6:
+        if (keyword.equals("DumpProductReplacementResponseTimes")) {
+          DumpProductReplacementResponseTimes = b;
+          break;
+        }
+      case 7:
+        if (keyword.equals("DumpPurchaseResponseTimes")) {
+          DumpPurchaseResponseTimes = b;
+          break;
+        }
+      case 8:
+        if (keyword.equals("DumpSalesTransactionResponseTimes")) {
+          DumpSalesTransactionResponseTimes = b;
+          break;
+        }
+      case 9:
+        if (keyword.equals("DumpSaveForLaterResponseTimes")) {
+          DumpSaveForLaterResponseTimes = b;
+          break;
+        }
+      case 10:
+        if (keyword.equals("DumpServerDoNothingResponseTimes")) {
+          DumpServerDoNothingResponseTimes = b;
+          break;
+        }
+      case 11:
         if (keyword.equals("FastAndFurious")) {
           FastAndFurious = b;
           break;
         }
-      case 2:
+      case 12:
         if (keyword.equals("PhasedUpdates")) {
           PhasedUpdates = b;
           break;
         }
-      case 3:
+      case 13:
         if (keyword.equals("ReportCSV")) {
           ReportCSV = b;
           break;
         }
-      case 4:
+      case 14:
         if (keyword.equals("ReportIndividualThreads")) {
           ReportIndividualThreads = b;
           break;
@@ -866,6 +957,46 @@ class Configuration {
     return PhasedUpdates;
   }
 
+  boolean DumpAbandonmentResponseTimes() {
+    return DumpAbandonmentResponseTimes;
+  }
+
+  boolean DumpBrowsingHistoryResponseTimes() {
+    return DumpBrowsingHistoryResponseTimes;
+  }
+
+  boolean DumpCustomerDoNothingResponseTimes() {
+    return DumpCustomerDoNothingResponseTimes;
+  }
+
+  boolean DumpCustomerReplacementResponseTimes() {
+    return DumpCustomerReplacementResponseTimes;
+  }
+
+  boolean DumpPreparationResponseTimes() {
+    return DumpPreparationResponseTimes;
+  }
+
+  boolean DumpProductReplacementResponseTimes() {
+    return DumpProductReplacementResponseTimes;
+  }
+
+  boolean DumpPurchaseResponseTimes() {
+    return DumpPurchaseResponseTimes;
+  }
+
+  boolean DumpSalesTransactionResponseTimes() {
+    return DumpSalesTransactionResponseTimes;
+  }
+
+  boolean DumpSaveForLaterResponseTimes() {
+    return DumpSaveForLaterResponseTimes;
+  }
+
+  boolean DumpServerDoNothingResponseTimes() {
+    return DumpServerDoNothingResponseTimes;
+  }
+
   int MaxArrayLength() {
     return MaxArrayLength;
   }
@@ -1039,10 +1170,17 @@ class Configuration {
       Report.outputNoLine(",arg:", listOfArguments.get(i));
 
     Report.output();
-    Report.output("ReportIndividualThreads,",
-                  ReportIndividualThreads? "true": "false");
-    Report.output("ReportCSV,", ReportCSV? "true": "false");
+    Report.output("ReportIndividualThreads,", ReportIndividualThreads? "true": "false");
+    Report.output("ReportCSV,",               ReportCSV? "true": "false");
 
+    Report.output("DumpCustomerDoNothingResponseTimes", DumpCustomerDoNothingResponseTimes? "true": "false");
+    Report.output("DumpCustomerReplacementResponseTimes", DumpCustomerReplacementResponseTimes? "true": "false");
+    Report.output("DumpPreparationResponseTimes", DumpPreparationResponseTimes? "true": "false");
+    Report.output("DumpProductReplacementResponseTimes", DumpProductReplacementResponseTimes? "true": "false");
+    Report.output("DumpPurchaseResponseTimes", DumpPurchaseResponseTimes? "true": "false");
+    Report.output("DumpSalesTransactionResponseTimes", DumpSalesTransactionResponseTimes? "true": "false");
+    Report.output("DumpSaveForLaterResponseTimes", DumpSaveForLaterResponseTimes? "true": "false");
+    Report.output("DumpServerDoNothingResponseTimes", DumpServerDoNothingResponseTimes? "true": "false");
 
     Report.output("Simulation configuration");
 
@@ -1298,10 +1436,21 @@ class Configuration {
       Report.output(listOfArguments.get(i));
 
     Report.output();
-    Report.output("      Individual thread report (ReportIndividualThreads): ",
-                  ReportIndividualThreads? "true": "false");
-    Report.output("                          Exporting to Excel (ReportCSV): ",
-                  ReportCSV? "true": "false");
+    Report.output("      Individual thread report (ReportIndividualThreads): ", ReportIndividualThreads? "true": "false");
+    Report.output("                          Exporting to Excel (ReportCSV): ", ReportCSV? "true": "false");
+    Report.output("                      DumpCustomerDoNothingResponseTimes: ",
+                  DumpCustomerDoNothingResponseTimes? "true": "false");
+    Report.output("                    DumpCustomerReplacementResponseTimes: ",
+                  DumpCustomerReplacementResponseTimes? "true": "false");
+    Report.output("                            DumpPreparationResponseTimes: ", DumpPreparationResponseTimes? "true": "false");
+    Report.output("                     DumpProductReplacementResponseTimes: ",
+                  DumpProductReplacementResponseTimes? "true": "false");
+    Report.output("                               DumpPurchaseResponseTimes: ", DumpPurchaseResponseTimes? "true": "false");
+    Report.output("                       DumpSalesTransactionResponseTimes: ",
+                  DumpSalesTransactionResponseTimes? "true": "false");
+    Report.output("                           DumpSaveForLaterResponseTimes: ", DumpSaveForLaterResponseTimes? "true": "false");
+    Report.output("                        DumpServerDoNothingResponseTimes: ", DumpServerDoNothingResponseTimes? "true": "false");
+
 
     Report.output();
     Report.output("Simulation configuration");
