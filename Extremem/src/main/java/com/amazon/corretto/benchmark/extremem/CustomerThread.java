@@ -106,8 +106,12 @@ class CustomerThread extends ExtrememThread {
       Customer customer = all_customers.selectRandomCustomer(this);
       now.garbageFootprint(this);
 
-      if (!logging && (now.compare(start_logging_time) >= 0)) {
-        logging = true;
+      if (!logging) {
+        // Exercise reset() during warmup time
+        history.reset();
+        if (now.compare(start_logging_time) >= 0) {
+          logging = true;
+        }
       }
 
       // In an earlier implementation, termination of the thread was
@@ -193,15 +197,11 @@ class CustomerThread extends ExtrememThread {
         
         // else, search came up empty.  wait for next period.
         Trace.msg(4, "Customer Thread ", label, " matched no customers");
-        if (logging) {
-          history.logNoChoice(this, next_release_time);
-        }
+        history.logNoChoice(this, next_release_time);
 
         AbsoluteTime end_think = next_release_time.addRelative(this, this.think_time);
         end_think.changeLifeSpan(this, LifeSpan.TransientShort);
-        if (logging) {
-          history.logPrepareToThink(this, next_release_time, all_count, any_count, saved_count);
-        }
+        history.logPrepareToThink(this, next_release_time, all_count, any_count, saved_count);
         end_think.sleep(this);
         end_think.garbageFootprint(this);
       } else {
@@ -221,9 +221,7 @@ class CustomerThread extends ExtrememThread {
 
         AbsoluteTime end_think = next_release_time.addRelative(this, this.think_time);
         end_think.changeLifeSpan(this, LifeSpan.TransientShort);
-        if (logging) {
-          history.logPrepareToThink(this, next_release_time, all_count, any_count, saved_count);
-        }
+        history.logPrepareToThink(this, next_release_time, all_count, any_count, saved_count);
         end_think.sleep(this);
         end_think.garbageFootprint(this);
 
@@ -282,9 +280,7 @@ class CustomerThread extends ExtrememThread {
             // SalesTransaction object as garbage.  This is the same
             // process used even if the associated customer or product
             // becomes decommissioned before the sale is transacted.
-            if (logging) {
-              history.logPurchase(this, end_think);
-            }
+            history.logPurchase(this, end_think);
             break;
 
           case SaveProductForLater:
@@ -317,9 +313,7 @@ class CustomerThread extends ExtrememThread {
             // as eligible for garbage collection by the
             // Customer.prepareForDemise() method that executes when
             // the customer is decommissioned.
-            if (logging) {
-              history.log4Later(this, end_think);
-            }
+            history.log4Later(this, end_think);
             break;
             
           case AbandonProduct:
@@ -327,9 +321,7 @@ class CustomerThread extends ExtrememThread {
             selected.garbageFootprint(this);
 
             Trace.msg(4, "Customer Thread ", label, ", chose abandon");
-            if (logging) {
-              history.logAbandonment(this, end_think);
-            }
+            history.logAbandonment(this, end_think);
         }
       }
       next_release_time.garbageFootprint(this);

@@ -18,7 +18,7 @@ class ResponseTimeMeasurements extends ExtrememObject {
   private int first_entry;
 
   private long max_logged;
-  private long min_logged;
+  private long min_logged = Long.MAX_VALUE;
 
   // Each log entry is typically represented in microsecond units.
   private final long[] log;
@@ -47,6 +47,14 @@ class ResponseTimeMeasurements extends ExtrememObject {
     log.accumulate(ls, MemoryFlavor.ArrayObject, Polarity.Expand, 1);
     log.accumulate(ls, MemoryFlavor.ArrayRSB, Polarity.Expand,
                    total_entries * Util.SizeOfLong);
+  }
+
+  void reset() {
+    logged_entries = 0;
+    first_entry = 0;
+    max_logged = 0;
+    min_logged = Long.MAX_VALUE;
+    needs_preparation = true;
   }
 
   void addToLog(ResponseTimeMeasurements other) {
@@ -87,9 +95,9 @@ class ResponseTimeMeasurements extends ExtrememObject {
   public void prep_for_reporting(String label) {
     if (label != null) {
       Report.acquireReportLock();
-      Report.output(label);
+      Report.output(label, ", entries: ", Long.toString(logged_entries));
       for (int i = 0; i < logged_entries; i++) {
-        Report.output(Long.toString(log[i]));
+        Report.output(Long.toString(log[(first_entry + i) % total_entries]));
       }
       Report.releaseReportLock();
     }

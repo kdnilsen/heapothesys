@@ -96,6 +96,43 @@ class CustomerLog extends ExtrememObject {
    return prepare_response_times;
   }
 
+  void reset() {
+    preparer.reset();
+    purchaser.reset();
+    saver.reset();
+    abandoner.reset();
+    loser.reset();
+
+    engagements = 0;
+
+    min_any = Integer.MAX_VALUE;
+    max_any = 0;
+    total_any = 0;
+
+    min_all = Integer.MAX_VALUE;
+    max_all = 0;
+    total_all = 0;
+
+    min_saved = Integer.MAX_VALUE;
+    max_saved = 0;
+    total_previously_saved = 0;
+
+    min_selection = Integer.MAX_VALUE;
+    max_selection = 0;
+    total_selection = 0;
+
+    total_purchased = 0;
+    total_saved = 0;
+    total_abandoned = 0;
+    total_do_nothings = 0;
+
+    prepare_response_times.reset();
+    purchase_response_times.reset();
+    save_for_later_response_times.reset();
+    abandonment_response_times.reset();
+    do_nothing_response_times.reset();
+  }
+
   // This information is redundant with purchaser.  I'll gather it
   // here, and ignore it when logging purchases.
   void logPrepareToThink(CustomerThread t, AbsoluteTime release,
@@ -195,7 +232,7 @@ class CustomerLog extends ExtrememObject {
   }
 
   void prepareToReport(String thread_label) {
-      String label = (_dump_prepare_response_times)? thread_label + ":PreparationResponseTimes": null;
+    String label = (_dump_prepare_response_times)? thread_label + ":PreparationResponseTimes": null;
     prepare_response_times.prep_for_reporting(label);
 
     label = (_dump_purchase_response_times)? thread_label + ":PurchaseResponseTimes": null;

@@ -121,6 +121,22 @@ class RelativeTimeMetrics extends ExtrememObject {
                    BucketCount * (Util.SizeOfInt + Util.SizeOfLong));
   }
 
+  void reset() {
+    for (int i = 0; i < BucketCount; i++) {
+      buckets[i] = 0;
+      bucket_bounds[i] = 0;
+    }
+    sis = Long.MAX_VALUE;
+    fblb = 0;
+    lbhb = 0;
+    fbi= 0;
+    sis = 0;
+    lis = 0;
+    biu = 0;
+    total_entries = 0;
+    accumulated_microseconds = 0;
+  }
+
   void addToLog(RelativeTimeMetrics other) {
     int index = other.fbi;
     boolean seen_sis = false;

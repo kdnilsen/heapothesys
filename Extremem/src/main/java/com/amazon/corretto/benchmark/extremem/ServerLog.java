@@ -88,6 +88,41 @@ class ServerLog extends ExtrememObject {
                    Polarity.Expand, 17 * Util.SizeOfInt);
   }
 
+  void reset() {
+    sales_xact.reset();
+    expire_history.reset();
+    replace_customers.reset();
+    replace_products.reset();
+    do_nothing.reset();
+
+    xact_batches = 0;;
+    min_xact_per_batch = Integer.MAX_VALUE;
+    max_xact_per_batch = 0;;
+    total_xact = 0;
+    xact_response_times.reset();
+
+    history_batches = 0;;
+    min_history_per_batch = Integer.MAX_VALUE;
+    max_history_per_batch = 0;
+    total_histories = 0;;
+    history_response_times.reset();
+
+    customer_batches = 0;
+    min_customer_per_batch = Integer.MAX_VALUE;
+    max_customer_per_batch = 0;
+    total_customers = 0;
+    customer_response_times.reset();
+
+    product_batches = 0;
+    min_product_per_batch = Integer.MAX_VALUE;
+    max_product_per_batch = 0;
+    total_products = 0;
+    product_response_times.reset();
+
+    total_do_nothings = 0;
+    do_nothing_response_times.reset();
+  }
+
   void logTransactions(ExtrememThread t, AbsoluteTime release, int count) {
     xact_batches++;
     if (count > max_xact_per_batch)

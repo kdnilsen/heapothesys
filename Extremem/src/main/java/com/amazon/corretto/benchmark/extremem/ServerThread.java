@@ -113,8 +113,12 @@ class ServerThread extends ExtrememThread {
       if (now.compare(end_simulation_time) >= 0)
         break;
 
-      if (!logging && (now.compare(start_logging_time) >= 0)) {
-        logging = true;
+      if (!logging) {
+        // Exercise reset() during warmup time
+        history.reset();
+        if (now.compare(start_logging_time) >= 0) {
+          logging = true;
+        }
       }
 
       Trace.msg(4, "Server ", label, ": attention: ", Integer.toString(attention));
@@ -153,9 +157,7 @@ class ServerThread extends ExtrememThread {
           }
           Trace.msg(4, "Server ", label, ": processed sales transactions: ",
                     Integer.toString(transaction_count));
-          if (logging) {
-            history.logTransactions(this, next_release_time, transaction_count);
-          }
+          history.logTransactions(this, next_release_time, transaction_count);
           break;
         case 1:
           // Statistically, the number of BrowsingHistory instances that
@@ -177,9 +179,7 @@ class ServerThread extends ExtrememThread {
           }
           Trace.msg(4, "Server ", label, ": browsing_expirations: ",
                     Integer.toString(browsing_expirations));
-          if (logging) {
-            history.logHistories(this, next_release_time, browsing_expirations);
-          }
+          history.logHistories(this, next_release_time, browsing_expirations);
           break;
         case 2:
           if (next_release_time.compare(customer_replacement_time) >= 0) {
@@ -200,14 +200,10 @@ class ServerThread extends ExtrememThread {
             Trace.msg(4, "Server ", label, ": replaced ",
                       Integer.toString(config.CustomerReplacementCount()),
                       " customers");
-            if (logging) {
-              history.logCustomers(this, next_release_time, config.CustomerReplacementCount());
-            }
+            history.logCustomers(this, next_release_time, config.CustomerReplacementCount());
           } else {
             Trace.msg(4, "Server ", label, ": too early to replace customers");
-            if (logging) {
-              history.logDoNothings(this, next_release_time);
-            }
+            history.logDoNothings(this, next_release_time);
           }
           break;
         case 3:
@@ -223,14 +219,10 @@ class ServerThread extends ExtrememThread {
                                                     LifeSpan.TransientShort);
             Trace.msg(4, "Server ", label, ": replaced products: ",
                       Integer.toString(config.ProductReplacementCount()));
-            if (logging) {
-              history.logProducts(this, next_release_time, config.ProductReplacementCount());
-            }
+            history.logProducts(this, next_release_time, config.ProductReplacementCount());
           } else {
             Trace.msg(4, "Server ", label, ": too early to replace products");
-            if (logging) {
-              history.logDoNothings(this, next_release_time);
-            }
+            history.logDoNothings(this, next_release_time);
           }
           break;
         default:
