@@ -74,7 +74,7 @@ class RelativeTimeMetrics extends ExtrememObject {
   long lis;                     // largest interval seen (in microseconds)
 
   int biu;                      // buckets in use currently
-  int [] buckets;
+  long [] buckets;
   long [] bucket_bounds;        // bucket_bounds[i] holds the low
                                 // bound (microseconds) for tallies
                                 // accumulated in buckets[i], except
@@ -88,7 +88,7 @@ class RelativeTimeMetrics extends ExtrememObject {
                                 // Accumulation of tallies uses a
                                 // binary search to find the index of
                                 // the bucket at which to accumulate.
-  int total_entries = 0;
+  long total_entries = 0;
   long accumulated_microseconds = 0;
 
   private final String id;
@@ -99,7 +99,7 @@ class RelativeTimeMetrics extends ExtrememObject {
   
   public RelativeTimeMetrics(ExtrememThread t, LifeSpan ls) {
     super(t, ls);
-    buckets = new int [BucketCount];
+    buckets = new long [BucketCount];
     bucket_bounds = new long [BucketCount];
     sis = Long.MAX_VALUE;
     id = "RTM_" + nextSequenceNo();
@@ -148,17 +148,17 @@ class RelativeTimeMetrics extends ExtrememObject {
           seen_sis = true;
           bucket_average = (other.bucket_bounds[next_index] - other.sis) / 2;
           this.addToLog(other.sis);
-          for (int j = other.buckets[index] - 1; j > 0; j--)
+          for (long j = other.buckets[index] - 1; j > 0; j--)
             this.addToLog(bucket_average);
         } // else, this is an empty bucket that precedes sis
       } else if (i == other.biu - 1) {
         bucket_average = (other.lis - other.startAt(index)) / 2;
         this.addToLog(other.lis);
-        for (int j = other.buckets[index] - 1; j > 0; j--)
+        for (long j = other.buckets[index] - 1; j > 0; j--)
           this.addToLog(bucket_average);
       } else {
         bucket_average = other.startAt(index) + other.spanAt(index) / 2;
-        for (int j = other.buckets[index]; j > 0; j--)
+        for (long j = other.buckets[index]; j > 0; j--)
           this.addToLog(bucket_average);
       }
       index = next_index;
@@ -465,7 +465,7 @@ class RelativeTimeMetrics extends ExtrememObject {
       // flows to here.  The solution is to consolidate the entirety
       // of the existing span into a single consolidation bucket.
       int index = fbi;
-      int tally = 0;
+      long tally = 0;
       for (int i = 0; i < biu; i++) {
         tally += buckets[index];
         index = incrIndex(index);
@@ -522,7 +522,7 @@ class RelativeTimeMetrics extends ExtrememObject {
       long end_of_fill_span = bucket_bounds[fill_follow_index];
       while (compress_count > 0) {
         long bucket_span = adjusted_largest_span;
-        int tally = 0;
+        long tally = 0;
         while ((bucket_span > 0) && (compress_count > 0)) {
           bucket_span -= spanAt(index);
           tally += buckets[index];
@@ -531,7 +531,7 @@ class RelativeTimeMetrics extends ExtrememObject {
         }
 
         Trace.msg(4, id, " Filling @", Integer.toString(fill_index), " with ",
-                  Integer.toString(tally), ", spanning ",
+                  Long.toString(tally), ", spanning ",
                   debug_us2s(adjusted_largest_span));
 
         buckets[fill_index] = tally;
@@ -1366,8 +1366,7 @@ class RelativeTimeMetrics extends ExtrememObject {
     return result.substring(0, result.length() - 1);
   }
 
-  void addToReportTally(long[] histo_columns, long lb, long histo_span,
-                        long sample_midpoint, int increment) {
+  void addToReportTally(long[] histo_columns, long lb, long histo_span, long sample_midpoint, long increment) {
     int bucket_index = (int) ((sample_midpoint - lb) / histo_span);
     histo_columns[bucket_index] += increment;
   }
@@ -1421,9 +1420,9 @@ class RelativeTimeMetrics extends ExtrememObject {
 
       float right_rate, left_rate;
       if (buckets[index] > 0) {
-        int segment_quanta;
+        long segment_quanta;
 
-        int bucket_tally = buckets[index];
+        long bucket_tally = buckets[index];
         float my_slope;
         float my_intercept;
         long segment_start;
@@ -1434,7 +1433,7 @@ class RelativeTimeMetrics extends ExtrememObject {
           segment_start = truncate256(start_of_span);
 
           // end_of_interval and segment_start are both multiples of 256
-          segment_quanta = (int) ((end_of_span - segment_start) / 256);
+          segment_quanta = (end_of_span - segment_start) / 256;
           float this_rate = ((float) buckets[index]) / segment_quanta;
        
           left_rate = 0.0F;
@@ -1447,8 +1446,7 @@ class RelativeTimeMetrics extends ExtrememObject {
           
           // Log the sis value within the first bucket now.
           // Spread the remaining tally values as appropriate.
-          addToReportTally(histo_columns, lb, histo_span,
-                           sis, 1);
+          addToReportTally(histo_columns, lb, histo_span, sis, 1);
           bucket_tally--;
         } else if (i + 1 == biu) {
           segment_start = bucket_bounds[index];
@@ -1456,7 +1454,7 @@ class RelativeTimeMetrics extends ExtrememObject {
           // In the case that lis equals segment_start, we need to expand this segment_quanta calculation
           if (end_of_span <= lis)
             end_of_span += 256;
-          segment_quanta = (int) ((end_of_span - segment_start) / 256);
+          segment_quanta = (end_of_span - segment_start) / 256;
 
           float this_rate = ((float) buckets[index] / segment_quanta);
           
@@ -1482,7 +1480,7 @@ class RelativeTimeMetrics extends ExtrememObject {
           int prev_index = decrIndex(index);
 
           long end_of_span = bucket_bounds[next_index];
-          segment_quanta = (int) ((end_of_span - segment_start) / 256);
+          segment_quanta = (end_of_span - segment_start) / 256;
 
           float this_rate = ((float) buckets[index] / segment_quanta);
           
@@ -1502,13 +1500,12 @@ class RelativeTimeMetrics extends ExtrememObject {
         
         my_slope = (right_rate - left_rate) / (segment_quanta * 256);
         float midpoint_time = segment_start + segment_quanta * 128;
-        my_intercept =
-        ((float) bucket_tally) / segment_quanta - my_slope * midpoint_time;
+        my_intercept = ((float) bucket_tally) / segment_quanta - my_slope * midpoint_time;
 
         if (bucket_tally < segment_quanta) {
           // There are fewer tallied values than there are 256-microsecond segments
 
-          int pad;
+          long pad;
           long midpoint;
           if (my_slope > 0.0) {      // fill in from high end
             pad = segment_quanta - bucket_tally;
@@ -1560,7 +1557,7 @@ class RelativeTimeMetrics extends ExtrememObject {
             for (int j = 0; j < segment_quanta; j++) {
               long quanta_midpoint = segment_start + 128 + 256 * j;
 
-              int quanta_contribution = java.lang.Math.round(my_intercept + quanta_midpoint * my_slope);
+              long quanta_contribution = java.lang.Math.round(my_intercept + quanta_midpoint * my_slope);
               if (quanta_contribution > bucket_tally) {
                 quanta_contribution = bucket_tally;
               }
@@ -1578,22 +1575,20 @@ class RelativeTimeMetrics extends ExtrememObject {
             }
           } else {
             // fill from high to low
-            for (int j = segment_quanta - 1; j >= 0; j--) {
+            for (long j = segment_quanta - 1; j >= 0; j--) {
               long quanta_midpoint = segment_start + 128 + 256 * j;
-              int quanta_contribution =
-                java.lang.Math.round(my_intercept + quanta_midpoint * my_slope);
+              long quanta_contribution = java.lang.Math.round(my_intercept + quanta_midpoint * my_slope);
               if (quanta_contribution > bucket_tally) {
                 quanta_contribution = bucket_tally;
               }
-              addToReportTally(histo_columns, lb, histo_span,
-                               quanta_midpoint, quanta_contribution);
+              addToReportTally(histo_columns, lb, histo_span, quanta_midpoint, quanta_contribution);
               bucket_tally -= quanta_contribution;
             }
             // We distributed the tallies, but not all of them.  Spread the remaining
             // tallies "evenly".
             while (bucket_tally > 0) {
               long midpoint = segment_start - 128 + 256 * segment_quanta;
-              for (int j = 0; j < segment_quanta; j++) {
+              for (long j = 0; j < segment_quanta; j++) {
                 addToReportTally(histo_columns, lb, histo_span, midpoint, 1);
                 midpoint -= 256;
                 if (bucket_tally-- == 1)
@@ -1644,10 +1639,10 @@ class RelativeTimeMetrics extends ExtrememObject {
     } else {
       // Calculate median assuming each logged data value
       // represents the middle of its respective range
-      int entries_to_median = total_entries / 2;
+      long entries_to_median = total_entries / 2;
       int index = fbi;
       for (int i = 0; i < biu; i++) {
-        int bucket_count = buckets[index];
+        long bucket_count = buckets[index];
         long entry_value;
         
         if (sis > startAt(index))
@@ -1676,7 +1671,7 @@ class RelativeTimeMetrics extends ExtrememObject {
     if (reportCSV)
       Report.output("Total Measurement,Min,Max,Mean,Approximate Median");
 
-    s = Integer.toString(total_entries);
+    s = Long.toString(total_entries);
     l = s.length();
     Util.ephemeralString(t, l);
     if (reportCSV)
@@ -1744,7 +1739,7 @@ class RelativeTimeMetrics extends ExtrememObject {
       for (int i = 0; i < biu; i++) {
         String s1 = Long.toString(startAt(index));
         String s2 = Long.toString(startAt(index) + spanAt(index));
-        String s3 = Integer.toString(buckets[index]);
+        String s3 = Long.toString(buckets[index]);
 
         Util.ephemeralString(t, s1.length());
         Util.ephemeralString(t, s2.length());
@@ -1766,7 +1761,7 @@ class RelativeTimeMetrics extends ExtrememObject {
       long histo_columns[] = new long[HistoColumnCount];
 
       Trace.msg(4, id, ":Preparing histogram with ",
-                Integer.toString(total_entries), " entries");
+                Long.toString(total_entries), " entries");
       Trace.msg(4, id, ":           ranging from: ", debug_us2s(sis));
       Trace.msg(4, id, ":                     to: ", debug_us2s(lis));
       Trace.msg(4, id, ":            from (fblb): ", debug_us2s(fblb));
@@ -1776,13 +1771,13 @@ class RelativeTimeMetrics extends ExtrememObject {
 
       long repack_bucket_span = repackSpan(repack_lb, lis);
       repack(histo_columns, repack_lb, repack_bucket_span);
-      int max_histo_size = 0;
+      long max_histo_size = 0;
       for (int i = 0; i < HistoColumnCount; i++) {
         if (histo_columns[i] > max_histo_size)
           max_histo_size = (int) histo_columns[i];
       }
       int num_rows = 0;
-      int two_to_rows = 1;
+      long two_to_rows = 1;
       while (two_to_rows < max_histo_size) {
         num_rows++;
         two_to_rows += two_to_rows;
@@ -1813,8 +1808,8 @@ class RelativeTimeMetrics extends ExtrememObject {
       // all values of seen_star initially false
       boolean[] seen_star = new boolean[HistoColumnCount];
       while (num_rows >= 0) {
-        String histo_count = Integer.toString(two_to_rows);
-        int pad = 7 - histo_count.length();
+        String histo_count = Long.toString(two_to_rows);
+        int pad = 9 - histo_count.length();
         for (int i = 0; i < pad; i++)
           Report.outputNoLine(" ");
         Report.outputNoLine(histo_count);
@@ -1836,10 +1831,10 @@ class RelativeTimeMetrics extends ExtrememObject {
         two_to_rows /= 2;
         num_rows--;
       }
-      Report.outputNoLine("        ");
+      Report.outputNoLine("          ");
       Report.output(
         "----------------------------------------------------------------");
-      Report.outputNoLine("        ");
+      Report.outputNoLine("          ");
       int penultimate_column = -1;
       for (int i = 0; i <= last_populated_column; i++) {
         if (populations[i])
@@ -1852,7 +1847,7 @@ class RelativeTimeMetrics extends ExtrememObject {
       boolean non_empty_column = (last_populated_column >= 0);
       while (last_populated_column > 0) {
         int penultimate_populated = -1;
-        Report.outputNoLine("        ");
+        Report.outputNoLine("          ");
         for (int i = 0; i < last_populated_column; i++) {
           if (populations[i]) {
             Report.outputNoLine("|");
@@ -1868,7 +1863,7 @@ class RelativeTimeMetrics extends ExtrememObject {
         last_populated_column = penultimate_populated;
       }
       if (non_empty_column) {
-        Report.outputNoLine("        ");
+        Report.outputNoLine("          ");
         for (int i = 0; i < HistoColumnCount; i++) {
           if (populations[i]) {
             Report.outputNoLine("+- < ");
@@ -1896,7 +1891,7 @@ class RelativeTimeMetrics extends ExtrememObject {
     Trace.debug(id, ":  smallest interval seen: ", Long.toString(sis));
     Trace.debug(id, ":  largest interval seen: ", Long.toString(lis));
     int index = fbi;
-    int total_tallies = 0;
+    long total_tallies = 0;
     for (int i = 0; i < biu; i++) {
       Trace.debug(id, ":    tally for range [", Integer.toString(index),
                   "] starting at ",
@@ -1922,7 +1917,7 @@ class RelativeTimeMetrics extends ExtrememObject {
     Trace.msg(4, id, ":  smallest interval seen: ", Long.toString(sis));
     Trace.msg(4, id, ":  largest interval seen: ", Long.toString(lis));
     int index = fbi;
-    int total_tallies = 0;
+    long total_tallies = 0;
     for (int i = 0; i < biu; i++) {
       Trace.msgNoLine(4, id, ":    tally for range [", Integer.toString(index),
                       "] starting at ",

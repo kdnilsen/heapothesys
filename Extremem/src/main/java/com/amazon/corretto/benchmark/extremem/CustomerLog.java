@@ -15,7 +15,7 @@ package com.amazon.corretto.benchmark.extremem;
 class CustomerLog extends ExtrememObject {
   RelativeTimeMetrics preparer, purchaser, saver, abandoner, loser;
 
-  int engagements;
+  long engagements;
 
   int min_any = Integer.MAX_VALUE;
   int max_any;
@@ -36,10 +36,10 @@ class CustomerLog extends ExtrememObject {
 
   // Note: engagements equals the sum of
   // total_purchased, total_saved, total_abandoned, total_do_nothings
-  int total_purchased;
-  int total_saved;
-  int total_abandoned;
-  int total_do_nothings;
+  long total_purchased;
+  long total_saved;
+  long total_abandoned;
+  long total_do_nothings;
 
   final ResponseTimeMeasurements prepare_response_times;
   final ResponseTimeMeasurements purchase_response_times;
@@ -227,7 +227,7 @@ class CustomerLog extends ExtrememObject {
     delta.garbageFootprint(t);
   }
 
-  int engagements() {
+  long engagements() {
     return engagements;
   }
 
@@ -256,7 +256,7 @@ class CustomerLog extends ExtrememObject {
     Report.output("Customer Thread ", label, " summary");
     Report.output("");
 
-    s = Integer.toString(engagements);
+    s = Long.toString(engagements);
     l = s.length();
     Util.ephemeralString(t, l);
     if (reportCSV)
@@ -265,7 +265,7 @@ class CustomerLog extends ExtrememObject {
       Report.output(" Total engagements: ", s);
     Util.abandonEphemeralString(t, l);
 
-    s = Integer.toString(total_purchased);
+    s = Long.toString(total_purchased);
     l = s.length();
     Util.ephemeralString(t, l);
     if (reportCSV)
@@ -274,7 +274,7 @@ class CustomerLog extends ExtrememObject {
       Report.output("         purchases: ", s);
     Util.abandonEphemeralString(t, l);
     
-    s = Integer.toString(total_saved);
+    s = Long.toString(total_saved);
     l = s.length();
     Util.ephemeralString(t, l);
     if (reportCSV)
@@ -283,7 +283,7 @@ class CustomerLog extends ExtrememObject {
       Report.output("   saves for later: ", s);
     Util.abandonEphemeralString(t, l);
     
-    s = Integer.toString(total_abandoned);
+    s = Long.toString(total_abandoned);
     l = s.length();
     Util.ephemeralString(t, l);
     if (reportCSV)
@@ -292,7 +292,7 @@ class CustomerLog extends ExtrememObject {
       Report.output("      abandonments: ", s);
     Util.abandonEphemeralString(t, l);
     
-    s = Integer.toString(total_do_nothings);
+    s = Long.toString(total_do_nothings);
     l = s.length();
     Util.ephemeralString(t, l);
     if (reportCSV)

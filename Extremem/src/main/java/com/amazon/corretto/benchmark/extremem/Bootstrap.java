@@ -686,9 +686,9 @@ public class Bootstrap extends ExtrememThread {
     int customer_thread_count = _config.CustomerThreads();
     RelativeTime customer_period = _customer_period;;
     RelativeTime simulation_duration = _config.SimulationDuration();
-    int activations_per_thread = (int) simulation_duration.divideBy(customer_period);
-    int expected_activations = customer_thread_count * activations_per_thread;
-    int actual_activations = _customer_accumulator.engagements();
+    long activations_per_thread = (long) simulation_duration.divideBy(customer_period);
+    long expected_activations = customer_thread_count * activations_per_thread;
+    long actual_activations = _customer_accumulator.engagements();
 
     // Allow observed count to be no more than customer_thread_count less than the expected activations.
     // It may be less, depending on when particular threads receive their termination signal at the end of simulation.
