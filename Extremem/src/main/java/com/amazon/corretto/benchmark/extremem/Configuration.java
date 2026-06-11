@@ -91,10 +91,14 @@ class Configuration {
   static final int DefaultBrowsingExpirationMinutes = 10;
   static final int DefaultCustomerReplacementPeriodSeconds = 60;
   static final int DefaultCustomerReplacementCount = 16;
+  static final int DefaultNumCustomersVariancePercent = 0;
+  static final int DefaultNumProductsVariancePercent = 0;
   static final int DefaultProductReplacementPeriodSeconds = 90;
   static final int DefaultProductReplacementCount = 64;
 
   static final int DefaultPhasedUpdateIntervalSeconds = 60;
+
+
 
   static final long DefaultDurationMinutes = 10;
   static final long DefaultWarmupSeconds = 0;
@@ -113,7 +117,9 @@ class Configuration {
   private int MaxP99_999CustomerPrepMicroseconds;
   private int MaxP100CustomerPrepMicroseconds;
   private int NumCustomers;
+  private int NumCustomersVariancePercent;
   private int NumProducts;
+  private int NumProductsVariancePercent;
   private int ProductNameLength;
   private int ProductDescriptionLength;
   private int ProductReviewLength;
@@ -205,9 +211,10 @@ class Configuration {
                    Polarity.Expand, 1);
 
     // Account for
-    //  24 int fields: DictionarySize, ResponseTimeMeasurements,
+    //  26 int fields: DictionarySize, ResponseTimeMeasurements,
     //                 MaxArrayLength, MaxP???CustomerPrepMicroseconds (7 fields),
-    //                 NumCustomers, NumProducts, ProductNameLength,
+    //                 NumCustomers, NumCustomersVariancePercent,
+    //                 NumProducts, NumProductsVariancePercent, ProductNameLength,
     //                 ProductDescriptionLength, ProductReviewLength,
     //                 RandomSeed, KeywordSearchCount,
     //                 CustomerThreads, ServerThreads, 
@@ -219,7 +226,7 @@ class Configuration {
     //   2 float fields: BuyThreshold, SaveForLaterThreshold;
     //   2 boolean fields: ReportIndividualThreads, ReportCSV
     log.accumulate(LifeSpan.NearlyForever, MemoryFlavor.ObjectRSB,
-                   Polarity.Expand, 24 * Util.SizeOfInt +
+                   Polarity.Expand, 26 * Util.SizeOfInt +
                    2 * Util.SizeOfFloat + 2 * Util.SizeOfBoolean);
 
     // Account for 11 reference fields: args, dictionary,
@@ -257,7 +264,9 @@ class Configuration {
     MaxP99_999CustomerPrepMicroseconds = DefaultMaxP99_999CustomerPrepMicroseconds;
     MaxP100CustomerPrepMicroseconds = DefaultMaxP100CustomerPrepMicroseconds;
     NumCustomers = DefaultNumCustomers;
+    NumCustomersVariancePercent = DefaultNumCustomersVariancePercent;
     NumProducts = DefaultNumProducts;
+    NumProductsVariancePercent = DefaultNumProductsVariancePercent;
     ProductNameLength = DefaultProductNameLength;
     ProductDescriptionLength = DefaultProductDescriptionLength;
     ProductReviewLength = DefaultProductReviewLength;
@@ -358,7 +367,9 @@ class Configuration {
     "MaxP99_999CustomerPrepMicroseconds",
     "MaxP100CustomerPrepMicroseconds",
     "NumCustomers",
+    "NumCustomersVariancePercent",
     "NumProducts",
+    "NumProductsVariancePercent",
     "ProductDescriptionLength",
     "ProductNameLength",
     "ProductReplacementCount",
@@ -612,51 +623,61 @@ class Configuration {
           break;
         }
       case 14:
+        if (keyword.equals("NumCustomersVariancePercent")) {
+          NumCustomersVariancePercent = ui;
+          break;
+        }
+      case 15:
         if (keyword.equals("NumProducts")) {
           NumProducts = ui;
           break;
         }
-      case 15:
+      case 16:
+        if (keyword.equals("NumProductsVariancePercent")) {
+          NumProductsVariancePercent = ui;
+          break;
+        }
+      case 17:
         if (keyword.equals("ProductDescriptionLength")) {
           ProductDescriptionLength = ui;
           break;
         }
-      case 16:
+      case 18:
         if (keyword.equals("ProductNameLength")) {
           ProductNameLength = ui;
           break;
         }
-      case 17:
+      case 19:
         if (keyword.equals("ProductReplacementCount")) {
           ProductReplacementCount = ui;
           break;
         }
-      case 18:
+      case 20:
         if (keyword.equals("ProductReviewLength")) {
           ProductReviewLength = ui;
           break;
         }
-      case 19:
+      case 21:
         if (keyword.equals("RandomSeed")) {
           RandomSeed = ui;
           break;
         }
-      case 20:
+      case 22:
         if (keyword.equals("ResponseTimeMeasurements")) {
           ResponseTimeMeasurements = ui;
           break;
         }
-      case 21:
+      case 23:
         if (keyword.equals("SalesTransactionQueueCount")) {
           SalesTransactionQueueCount = ui;
           break;
         }
-      case 22:
+      case 24:
         if (keyword.equals("SelectionCriteriaCount")) {
           SelectionCriteriaCount = ui;
           break;
         }
-      case 23:
+      case 25:
         if (keyword.equals("ServerThreads")) {
           ServerThreads = ui;
           break;
@@ -843,8 +864,30 @@ class Configuration {
     if (NumProducts < 1)
       usage("NumProducts must be greater or equal to 1");
 
+    if (((NumProductsVariancePercent != 0) || (NumProductsVariancePercent != 00)) && !PhasedUpdates) {
+      usage("Only override defaults for NumProductsVariancePercent and NumProductsVariancePercent if PhasedUpdates");
+    }
+
+    if (NumProductsVariancePercent > 99) {
+      usage("NumProductsVariancePercent must be <= 99");
+    }
+
+    long max_products = (long) NumProducts + (long) (NumProductsVariancePercent * 0.01 * NumProducts);
+    if (max_products > (long) Integer.MAX_VALUE) {
+      usage("NumProducts + Variance must be less than or equal to Integer.MAX_VALUE");
+    }
+
     if (NumCustomers < 1)
       usage("NumCustomers must be greater or equal to 1");
+
+    if (NumCustomersVariancePercent > 99) {
+      usage("NumCustomersVariancePercent must be <= 99");
+    }
+
+    long max_customers = (long) NumCustomers + (long) (NumCustomersVariancePercent * 0.01 * NumCustomers);
+    if (max_customers > (long) Integer.MAX_VALUE) {
+      usage("NumCustomers + Variance must be less than or equal to Integer.MAX_VALUE");
+    }
 
     RelativeTime Zero = new RelativeTime(t);
     if (PhasedUpdateInterval.compare(Zero) == 0) {
@@ -1038,9 +1081,17 @@ class Configuration {
   int NumCustomers() {
     return NumCustomers;
   }
+
+  int NumCustomersVariancePercent() {
+    return NumCustomersVariancePercent;
+  }
   
   int NumProducts() {
     return NumProducts;
+  }
+  
+  int NumProductsVariancePercent() {
+    return NumProductsVariancePercent;
   }
   
   int ProductNameLength() {
