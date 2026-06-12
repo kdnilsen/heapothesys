@@ -98,8 +98,6 @@ class Configuration {
 
   static final int DefaultPhasedUpdateIntervalSeconds = 60;
 
-
-
   static final long DefaultDurationMinutes = 10;
   static final long DefaultWarmupSeconds = 0;
 
@@ -1419,6 +1417,12 @@ class Configuration {
     Report.output("NumCustomers,", s);
     Util.abandonEphemeralString(t, l);
 
+    s = Integer.toString(NumCustomersVariancePercent);
+    l = s.length();
+    Util.ephemeralString(t, l);
+    Report.output("NumCustomersVariancePercent,", s);
+    Util.abandonEphemeralString(t, l);
+
     s = Integer.toString(KeywordSearchCount);
     l = s.length();
     Util.ephemeralString(t, l);
@@ -1453,6 +1457,12 @@ class Configuration {
     l = s.length();
     Util.ephemeralString(t, l);
     Report.output("NumProducts,", s);
+    Util.abandonEphemeralString(t, l);
+
+    s = Integer.toString(NumProductsVariancePercent);
+    l = s.length();
+    Util.ephemeralString(t, l);
+    Report.output("NumProductsVariancePercent,", s);
     Util.abandonEphemeralString(t, l);
 
     s = Integer.toString(ProductNameLength);
@@ -1680,6 +1690,13 @@ class Configuration {
     Report.output("                                   Number (NumCustomers): ", s);
     Util.abandonEphemeralString(t, l);
 
+    s = Integer.toString(NumCustomersVariancePercent);
+    l = s.length();
+    Util.ephemeralString(t, l);
+    Report.output("                  Variance (NumCustomersVariancePercent): ", s);
+    Util.abandonEphemeralString(t, l);
+
+
     s = Integer.toString(KeywordSearchCount);
     l = s.length();
     Util.ephemeralString(t, l);
@@ -1721,6 +1738,12 @@ class Configuration {
     l = s.length();
     Util.ephemeralString(t, l);
     Report.output("                                    Number (NumProducts): ", s);
+    Util.abandonEphemeralString(t, l);
+
+    s = Integer.toString(NumProductsVariancePercent);
+    l = s.length();
+    Util.ephemeralString(t, l);
+    Report.output("                   Variance (NumProductsVariancePercent): ", s);
     Util.abandonEphemeralString(t, l);
 
     s = Integer.toString(ProductNameLength);
